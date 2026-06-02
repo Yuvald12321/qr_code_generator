@@ -1,34 +1,31 @@
-from PIL import ImageTk
 from tkinter import simpledialog, filedialog
-import tkinter as tk
-from ctypes import windll
+from customtkinter import ThemeManager
+import customtkinter as ctk
 import qrcode
+import re
 
-windll.shcore.SetProcessDpiAwareness(1)
+def grayfix(colors):
+    return [re.sub(r"gray(\d+)", r"#\1\1\1", i) for i in colors]
 
-content = str(simpledialog.askstring("QR Code Generator", "Enter the content of the QR code:"))
-qr = qrcode.make(content)
+darker, lighter = grayfix(ThemeManager.theme["CTk"]["fg_color"])
 
-root = tk.Tk()
+content = simpledialog.askstring("QR Code Generator", "Enter the content of the QR code")
+print(content)
+qr_setup = qrcode.QRCode()
+qr_setup.add_data(content)
+qr = qr_setup.make_image(fill_color=darker, back_color=lighter).get_image()
+
+root = ctk.CTk()
 root.title("QR Code Generator")
 root.resizable(False, False)
 
-img = ImageTk.PhotoImage(qr)
-qr_label = tk.Label(root, image=img)
-qr_label.image = img
-qr_label.pack()
+img = ctk.CTkImage(light_image=qr, dark_image=qr, size=qr.size)
+ctk.CTkLabel(root, text="", image=img).pack(padx=10, pady=10)
 
-tk.Button(root, text="Save QR Code", command=lambda: qr.save(filedialog.asksaveasfilename(
-    initialfile="QR Code",
+ctk.CTkButton(root, text="Save QR Code", command=lambda: qr.save(filedialog.asksaveasfilename(
+    initialfile="qrcode.png",
     defaultextension=".png",
-    filetypes=[
-        ("Image File", "*.png"),
-        ("Image File", "*.jpg"),
-        ("Image File", "*.jpeg"),
-        ("Image File", "*.webp"),
-        ("Image File", "*.bmp"),
-        ("All Files", "*.*")
-    ]
-))).pack(fill="x")
+    filetypes=[("PNG file", "*.png"), ("All files", "*.*")]
+))).pack(fill="x", padx=10, pady=(0, 10))
 
 root.mainloop()
