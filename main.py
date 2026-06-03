@@ -17,6 +17,7 @@ qr = qr_setup.make_image(fill_color=darker, back_color=lighter).get_image()
 
 root = ctk.CTk()
 root.title("QR Code Generator")
+root._set_appearance_mode("Dark")
 root.resizable(False, False)
 
 img = ctk.CTkImage(light_image=qr, dark_image=qr, size=qr.size)
