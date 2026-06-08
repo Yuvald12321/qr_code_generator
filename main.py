@@ -4,8 +4,10 @@ import customtkinter as ctk
 import qrcode
 import re
 
+
 def grayfix(colors):
     return [re.sub(r"gray(\d+)", r"#\1\1\1", i) for i in colors]
+
 
 darker, lighter = grayfix(ThemeManager.theme["CTk"]["fg_color"])
 
